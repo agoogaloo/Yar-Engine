@@ -81,7 +81,7 @@ public static class GameBase {
 	private static void Update() {
 		InputHandler.Update(Raylib.GetFrameTime() * gameSpeedMulti);
 		updateMethod(Raylib.GetFrameTime() * gameSpeedMulti);
-		if (InputHandler.GetButton("Debug").JustPressed) {
+		if (InputHandler.GetButton("Debug") != null && InputHandler.GetButton("Debug").JustPressed) {
 			debugMode = !debugMode;
 			Console.WriteLine("Debug Mode:" + debugMode);
 		}

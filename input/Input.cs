@@ -160,10 +160,16 @@ public class InputHandler {
 		controllerBinds.Add(binding, name);
 	}
 	public static Button GetButton(string name) {
-		return buttons[name];
+		if (buttons.ContainsKey(name)) {
+			return buttons[name];
+		}
+		return null;
 	}
 	public static Analog GetAnalog(string name) {
-		return analogInputs[name];
+		if (analogInputs.ContainsKey(name)) {
+			return analogInputs[name];
+		}
+		return null;
 
 	}
 }

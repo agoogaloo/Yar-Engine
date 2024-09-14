@@ -1,4 +1,3 @@
-using CaptGrapple;
 using YarEngine.Graphics;
 
 namespace YarEngine.Entities;
