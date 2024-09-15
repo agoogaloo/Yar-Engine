@@ -1,7 +1,7 @@
 # Yet Another Raylib (YAR) Engine
 
 Yar Engine is a (very incomplete) game engine for making 2d pixel art games in C#.<br> 
-The engine is still very incomplete and not really documented, so I don't recomend using it, but it might still be helpfull as a reference for your own engine/game
+The engine is still very incomplete and not really documented, so I don't recomend using it, but it might still be neat to look at as a reference for your own engine/game
 
 ---
 ## Setup
@@ -31,6 +31,5 @@ you can just clone the [example project](https://github.com/agoogaloo/YarEngine-
 alternatively you can just clone the [example project](https://github.com/agoogaloo/YarEngine-Example), run the following command, then build off the template
 ```
  git submodule update --init --recursive
-
 ```
 
