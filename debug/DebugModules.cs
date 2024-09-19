@@ -8,8 +8,10 @@ namespace YarEngine.Debug;
 public abstract class DebugModule {
 	public Font font;
 	public string name;
-	public DebugModule(Font? f = null) {
+	public int fontSize = 1;
+	public DebugModule(Font? f = null, float fontScale = 2) {
 		this.font = f ?? Raylib.GetFontDefault();
+		fontSize = (int)(font.BaseSize * fontScale);
 		name = this.GetType().Name;
 	}
 	public virtual void OnAdd() { }
@@ -39,8 +41,7 @@ public class EntityCount : DebugModule {
 		if (showLayers) {
 		}
 		else {
-			Raylib.DrawTextEx(font, "Entities:" + EntityManager.EntityCount, pos, font.BaseSize * 2, 1, colour);
+			Raylib.DrawTextEx(font, "Entities:" + EntityManager.EntityCount, pos, fontSize, 1, colour);
 		}
-
 	}
 }

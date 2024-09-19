@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Xml;
 using YarEngine.Graphics;
 using YarEngine.Physics;
 using Raylib_cs;
@@ -24,9 +23,9 @@ public class ColVisualiser : DebugModule {
 			foreach (KeyValuePair<Type, Dictionary<string, LinkedList<ICollider<object>>>> typePair in CollisionManager.groupDict) {
 				foreach (KeyValuePair<string, LinkedList<ICollider<object>>> layersPair in typePair.Value) {
 					string text = typePair.Key.Name + "." + layersPair.Key + ":" + layersPair.Value.Count;
-					Vector2 size = Raylib.MeasureTextEx(font, text, font.BaseSize * 2, 1);
+					Vector2 size = Raylib.MeasureTextEx(font, text, fontSize, 1);
 					Color col = colours[groupIndex % colours.Length];
-					DrawLayer(layersPair.Value, cam, pixelScale, col, text, new(pos.X, pos.Y + groupIndex * (size.Y + 2)));
+					DrawLayer(layersPair.Value, cam, pixelScale, col, text, new(pos.X, pos.Y + groupIndex * (size.Y + 6)));
 					groupIndex++;
 				}
 			}
@@ -35,9 +34,9 @@ public class ColVisualiser : DebugModule {
 	private void DrawLayer(LinkedList<ICollider<Object>> objects, GameCamera cam, float pixelScale, Color col, string text, Vector2 textLoc) {
 		//drawing layer label
 		if (showLayers) {
-			Vector2 size = Raylib.MeasureTextEx(font, text, font.BaseSize * 2, 1);
-			Raylib.DrawRectangle((int)textLoc.X, (int)(textLoc.Y), (int)size.X + 3, (int)size.Y, col);
-			Raylib.DrawTextEx(font, text, textLoc, font.BaseSize * 2, 1, Color.White);
+			Vector2 size = Raylib.MeasureTextEx(font, text, fontSize, 1);
+			Raylib.DrawRectangle((int)textLoc.X, (int)(textLoc.Y - 2), (int)size.X, (int)size.Y + 4, col);
+			Raylib.DrawTextEx(font, text, textLoc, fontSize, 1, Color.White);
 		}
 		//drawing collision boxes
 		foreach (ICollider<object> node in objects) {
@@ -60,8 +59,8 @@ public class ColVisualiser : DebugModule {
 		}
 		if (showCoords) {
 			string locText = "(" + Math.Round(s.Centre.X) + " " + Math.Round(s.Centre.Y) + ")";
-			Vector2 size = Raylib.MeasureTextEx(font, locText, font.BaseSize * 2, 1);
-			Raylib.DrawTextEx(font, locText, (s.Centre - cam.offset) * pixelScale - size / 2, font.BaseSize * 2, 1, col);
+			Vector2 size = Raylib.MeasureTextEx(font, locText, fontSize, 1);
+			Raylib.DrawTextEx(font, locText, (s.Centre - cam.offset) * pixelScale - size / 2, fontSize, 1, col);
 		}
 
 	}

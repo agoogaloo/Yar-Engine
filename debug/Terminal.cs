@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Xml;
 using YarEngine.Graphics;
 using YarEngine.Saves;
 using Raylib_cs;
@@ -116,28 +114,48 @@ public class Terminal : DebugModule {
 		Console.WriteLine("askjlh largest common string is " + completion);
 		lines[lineIndex] = completion;
 	}
-
-
-	public override void DrawPixel(GameCamera cam) {
+	public override void DrawFull(GameCamera cam, float pixelScale) {
 		if (!open) {
 			return;
 		}
-		int lineHeight = (int)Raylib.MeasureTextEx(font, "a", font.BaseSize, 1).Y + 1;
-		int width = 250;
+		int lineHeight = (int)((int)Raylib.MeasureTextEx(font, "a", fontSize, 1).Y + pixelScale);
+		int width = (int)((int)Raylib.MeasureTextEx(font, "a", fontSize, 1).Y + pixelScale) * 50;
 
-		int lineY = (int)(GameBase.GameSize.Y - lineHeight) - 3;
+
+		int lineY = (int)(GameBase.GameSize.Y * pixelScale - lineHeight) - 3;
 		Raylib.DrawRectangle(3, lineY - lineHeight * (LinesShown - 1) - 4, width, lineHeight * LinesShown, new(50, 50, 90, 200));
 		Raylib.DrawRectangle(3, lineY - 1, width, lineHeight + 1, new(25, 25, 50, 255));
-		Raylib.DrawTextEx(font, ">" + lines[lineIndex], new(5, lineY), font.BaseSize, 1, Color.White);
+		Raylib.DrawTextEx(font, ">" + lines[lineIndex], new(5, lineY), fontSize, 1, Color.White);
 		for (int i = 1; i < LinesShown; i++) {
 			int lineDrawI = (lineIndex - i) % LinesShown;
 			lineDrawI = lineDrawI < 0 ? lineDrawI + LinesShown : lineDrawI;
 
 			string line = lines[lineDrawI];
-			Raylib.DrawTextEx(font, line, new(6, lineY - 2 - lineHeight * i), font.BaseSize, 1, Color.White);
-
+			Raylib.DrawTextEx(font, line, new(6, lineY - 2 - lineHeight * i), fontSize, 1, Color.White);
 		}
 	}
+
+
+	/*public override void DrawPixel(GameCamera cam) {*/
+	/*	if (!open) {*/
+	/*		return;*/
+	/*	}*/
+	/*	int lineHeight = (int)Raylib.MeasureTextEx(font, "a", , 1).Y + 1;*/
+	/*	int width = 250;*/
+	/**/
+	/*	int lineY = (int)(GameBase.GameSize.Y - lineHeight) - 3;*/
+	/*	Raylib.DrawRectangle(3, lineY - lineHeight * (LinesShown - 1) - 4, width, lineHeight * LinesShown, new(50, 50, 90, 200));*/
+	/*	Raylib.DrawRectangle(3, lineY - 1, width, lineHeight + 1, new(25, 25, 50, 255));*/
+	/*	Raylib.DrawTextEx(font, ">" + lines[lineIndex], new(5, lineY), font.BaseSize, 1, Color.White);*/
+	/*	for (int i = 1; i < LinesShown; i++) {*/
+	/*		int lineDrawI = (lineIndex - i) % LinesShown;*/
+	/*		lineDrawI = lineDrawI < 0 ? lineDrawI + LinesShown : lineDrawI;*/
+	/**/
+	/*		string line = lines[lineDrawI];*/
+	/*		Raylib.DrawTextEx(font, line, new(6, lineY - 2 - lineHeight * i), font.BaseSize, 1, Color.White);*/
+	/**/
+	/*	}*/
+	/*}*/
 	public void ExecuteString(string line, bool output = true) {
 		string[] startLineArr = (string[])lines.Clone();
 		int startLineIndex = lineIndex;
