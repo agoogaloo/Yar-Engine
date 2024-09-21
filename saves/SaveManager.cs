@@ -47,11 +47,17 @@ public static class SaveManager {
 			File.AppendAllText(path, pair.Key + ":" + pair.Value + "\n");
 		}
 	}
+	public static bool DataExists(string name, string? path = null) {
+		path ??= savePath;
+		if (GetSaveDataDict(path).ContainsKey(name)) {
+			return true;
+		}
+		return false;
+	}
 	public static T? GetData<T>(string name, string? path = null) {
 		path ??= savePath;
-
-
 		Console.WriteLine(GetSaveDataDict(path) + path);
+		//setting the raw data as an empty string if there isn't any saved data with that name
 		if (!GetSaveDataDict(path).TryGetValue(name, out string raw)) {
 			raw = "";
 		}
