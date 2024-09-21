@@ -12,8 +12,10 @@ public abstract class DebugModule {
 	public Font font;
 	public string name;
 	public int fontSize = 1;
+	private bool generateConfig;
 	public DebugModule(Font? f = null, float fontScale = 2, string configFolder = "res/saves/debug/") {
 		this.font = f ?? Raylib.GetFontDefault();
+		this.generateConfig = SaveManager.GetData<bool>("generateConfig", "res/saves/debug/misc.config");
 		fontSize = (int)(font.BaseSize * fontScale);
 		name = this.GetType().Name;
 		configPath = configFolder + name + ".config";
@@ -28,6 +30,9 @@ public abstract class DebugModule {
 		if (SaveManager.DataExists(name, configPath)) {
 			return SaveManager.GetData<T>(name, configPath);
 		}
+		if (generateConfig) {
+			SaveProp<T>(name, def);
+		}
 		return def;
 	}
 	protected void SaveProp<T>(string name, T data) {
@@ -39,12 +44,8 @@ public class FPSDisplay : DebugModule {
 	public Vector2 pos;
 
 	public FPSDisplay() {
-		Console.WriteLine(pos = LoadProp<Vector2>("pos", new Vector2(3, 3), "display location"));
 		pos = LoadProp<Vector2>("pos", new Vector2(3, 3), "display location");
-		SaveProp<Vector2>("pos", pos);
-
 	}
-
 	public override void DrawFull(GameCamera cam, float scale) {
 		Raylib.DrawFPS((int)pos.X, (int)pos.Y);
 	}
@@ -54,10 +55,10 @@ public class EntityCount : DebugModule {
 	public bool showLayers;
 	public Color colour;
 
-	public EntityCount(Vector2? pos = null, bool showLayers = false, Font? font = null, Color? colour = null) : base(font) {
-		this.pos = pos ?? new(3, 18);
-		this.colour = colour ?? Color.White;
-		this.showLayers = showLayers;
+	public EntityCount(Vector2? pos = null, Font? font = null) : base(font) {
+		this.pos = LoadProp<Vector2>("pos", new(3, 18), "display location");
+		this.colour = LoadProp<Color>("colour", Color.White, "text colour");
+		this.showLayers = LoadProp<bool>("showLayers", false, "(not implemented) show number of entities in each layer ");
 	}
 
 	public override void DrawFull(GameCamera cam, float scale) {

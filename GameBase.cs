@@ -66,8 +66,8 @@ public static class GameBase {
 		finalTex = Raylib.LoadRenderTexture((int)(GameSize.X * PixelScale), (int)(GameSize.Y * PixelScale));
 
 		debugScreen = new();
-		debugScreen.AddModule(new FPSDisplay());
-		debugScreen.AddModule(new EntityCount());
+		debugScreen.RegisterModule(delegate { return new FPSDisplay(); });
+		debugScreen.RegisterModule(delegate { return new EntityCount(); });
 		debugScreen.terminal.AddCommand("speed", SpeedCommand);
 		debugScreen.terminal.AddCommand("skip", SkipCommand);
 	}

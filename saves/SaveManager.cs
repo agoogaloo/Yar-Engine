@@ -1,4 +1,5 @@
 using System.Numerics;
+using Raylib_cs;
 
 namespace YarEngine.Saves;
 
@@ -8,8 +9,12 @@ public static class SaveManager {
 	public static string savePath = "save.txt";
 	public static string debugSavePath = "debug.txt";
 	private static Dictionary<Type, SaveType> saveMethods = new() {
-		{typeof(string[]), i=>{return string.Join(",",(string[])i);}},
-		{typeof(Vector2), i=>{return ((Vector2)i).X+","+((Vector2)i).Y;}},
+		{typeof(string[]), i=>{
+				return string.Join(",",(string[])i);}},
+		{typeof(Vector2), i=>{
+				return ((Vector2)i).X+","+((Vector2)i).Y;}},
+		{typeof(Color), i=>{
+				return ((Color)i).R+","+((Color)i).G+","+((Color)i).B+","+((Color)i).A;}},
 	};
 	private static Dictionary<Type, LoadType> loadMethods = new(){
 		{typeof(string), i=>{return i;}},
@@ -17,14 +22,22 @@ public static class SaveManager {
 		{typeof(bool), i=>{ return i=="True";}},
 		{typeof(float), i=>{return float.Parse((string)i);}},
 		{typeof(string[]), i=>{return i.Split(",");}},
+		//vector loader
 		{typeof(Vector2),i=>{
 			string[] strs = i.Split(",");
 			if(strs.Length<2){
 				return Vector2.Zero;
 			}
 			return new Vector2(float.Parse(strs[0]), float.Parse(strs[1]));
+		}},
+		//colour loader
+		{typeof(Color),i=>{
+			string[] strs = i.Split(",");
+			if(strs.Length<4){
+				return Color.White ;
+			}
+			return new Color(int.Parse(strs[0]), int.Parse(strs[1]),int.Parse(strs[2]),int.Parse(strs[3]));
 		}}
-
 
 	};
 

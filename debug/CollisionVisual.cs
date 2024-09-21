@@ -7,14 +7,16 @@ namespace YarEngine.Debug;
 
 public class ColVisualiser : DebugModule {
 	public Vector2 pos;
-	public bool showLayers, showCoords;
+	public bool showLayers, showCoords, showSnappedCol, showRealCol;
 	public Color[] colours = [Color.Red, Color.Blue, Color.Green, Color.Black, Color.Gray];
 
 	public ColVisualiser(Vector2? pos = null, bool showLayers = true, bool showCoords = false, Font? font = null) : base(font) {
-		this.pos = pos ?? new(3, 35);
-		this.showLayers = showLayers;
-		this.showCoords = showCoords;
-		GameBase.debugScreen.terminal.AddCommand("collisionCoords", ExtraCommands.HitBoxCoords);
+		this.pos = LoadProp<Vector2>("pos", new(3, 35), "layer list position");
+		this.showLayers = LoadProp<bool>("showLayers", true, "list collision layers with their colours");
+		this.showCoords = LoadProp<bool>("showCoords", false, "show coordinates with each hitbox");
+		this.showSnappedCol = LoadProp<bool>("showSnapped", false, "show colliders snapped to neares pixel (what is checked)");
+		this.showRealCol = LoadProp<bool>("showTruePos", false, "show unrounded location of colliders (what is stored/moved)");
+
 	}
 	public override void DrawFull(GameCamera cam, float pixelScale) {
 		if (showLayers) {
@@ -41,8 +43,12 @@ public class ColVisualiser : DebugModule {
 		//drawing collision boxes
 		foreach (ICollider<object> node in objects) {
 			if (node.ShowCollision) {
-				DrawShape(node.Bounds, cam, pixelScale, col);
-				DrawShape(node.Bounds.SnapToGrid(), cam, pixelScale, col);
+				if (showRealCol) {
+					DrawShape(node.Bounds, cam, pixelScale, col);
+				}
+				if (showSnappedCol) {
+					DrawShape(node.Bounds.SnapToGrid(), cam, pixelScale, col);
+				}
 			}
 		}
 	}
