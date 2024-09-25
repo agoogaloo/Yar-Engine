@@ -8,25 +8,30 @@ public class DebugScreen {
 	private Dictionary<string, Func<DebugModule>> possibleModules = [];
 	private List<DebugModule> activeModules = [];
 	public Terminal terminal;
+	public static string configFolder = "res/saves/debug/";
+	public static float fontScale { get; protected set; }
+	public static Font defaultFont { get; protected set; } = Raylib.GetFontDefault();
 
 	private HashSet<string> moduleBlacklist = [];
 	public DebugScreen() {
-		moduleBlacklist = new(SaveManager.GetData<string[]>("blacklist", SaveManager.debugSavePath));
+		fontScale = SaveManager.GetData<float>("fontScale", 3, configFolder + "misc.config");
+		Console.WriteLine("screen fontsize:" + fontScale);
+		moduleBlacklist = new(SaveManager.GetData<string[]>("blacklist", configFolder + "misc.config"));
 		terminal = new();
-		terminal.AddCommand("addDebugMod", SaveAddModule, false);
-		terminal.AddCommand("rmvDebugMod", SaveRemoveModule, false);
-		terminal.AddCommand("activeDebugMods", ActiveModsCommand, "lists all available debug modules", false);
+		terminal.AddCommand("debugModAdd", SaveAddModule, false);
+		terminal.AddCommand("debugModRmv", SaveRemoveModule, false);
+		terminal.AddCommand("debugModListActive", ActiveModsCommand, "lists all available debug modules", false);
 		terminal.AddCommand("debugModList", ListModsCommand, "lists all active debug modules", false);
 		terminal.AddCommand("debugModPropList", ModulePropsCommand, false);
-		terminal.AddCommand("DebugModConfigGen", ConfigGenCommand, false);
-
+		terminal.AddCommand("debugModConfigGen", ConfigGenCommand, false);
 		terminal.AddCommand("fontSize", FontSizeCommand, false);
+		SetFont(terminal.font, fontScale);
 	}
 
 	public void Update(double time) {
 		foreach (DebugModule m in activeModules) {
 			m.Update(time);
-		}
+		};
 		terminal.Update(time);
 	}
 	public void DrawPixel(GameCamera cam) {
@@ -34,7 +39,6 @@ public class DebugScreen {
 			m.DrawPixel(cam);
 		}
 		terminal.DrawPixel(cam);
-
 	}
 	public void DrawFull(GameCamera cam, float pixelScale) {
 		foreach (DebugModule m in activeModules) {
@@ -77,22 +81,30 @@ public class DebugScreen {
 		return null;
 	}
 
-	public void SetFont(Font f, float scale = 2) {
+	public void SetFont(Font f, float scale = -1) {
+		defaultFont = f;
+		if (scale == -1) {
+			scale = fontScale;
+		}
 		int size = (int)(f.BaseSize * scale);
-		terminal.font = f;
-		terminal.fontSize = size;
 		foreach (DebugModule m in activeModules) {
 			m.font = f;
 			m.fontSize = size;
 		}
+		terminal.font = f;
+		terminal.fontSize = size;
 	}
 
 	//debug module commands
 	private void FontSizeCommand(String options) {
-		_ = float.TryParse(options, out float size);
-		SetFont(terminal.font, size);
-		terminal.Echo("set font scaled to " + size + " * base size");
-
+		bool validIn = float.TryParse(options, out float scale);
+		if (!validIn) {
+			terminal.Echo("a float font scale is required");
+			return;
+		}
+		SetFont(terminal.font, scale);
+		terminal.Echo("fontSize set to " + scale);
+		SaveManager.SaveData<float>("fontScale", scale, configFolder + "misc.config");
 	}
 	private void ListModsCommand() {
 		terminal.Echo("Module List:");
@@ -130,9 +142,9 @@ public class DebugScreen {
 	public void ConfigGenCommand(string option) {
 		if (possibleModules.ContainsKey(option)) {
 			terminal.Echo("Generating config");
-			SaveManager.SaveData<bool>(true, "generateConfig", "res/saves/debug/misc.config");
+			SaveManager.SaveData<bool>("generateConfig", true, "res/saves/debug/misc.config");
 			SaveAddModule(option);
-			SaveManager.SaveData<bool>(false, "generateConfig", "res/saves/debug/misc.config");
+			SaveManager.SaveData<bool>("generateConfig", true, "res/saves/debug/misc.config");
 		}
 		return;
 
@@ -153,12 +165,12 @@ public class DebugScreen {
 			terminal.Echo("module '" + m + "' not found and counld not be added");
 			terminal.Echo("module has still been removed from the blacklist");
 		}
-		SaveManager.SaveData<string[]>([.. moduleBlacklist], "blacklist", SaveManager.debugSavePath);
+		SaveManager.SaveData<string[]>("blacklist", [.. moduleBlacklist], configFolder + "misc.config");
 	}
 
 	public void SaveRemoveModule(string name) {
 		moduleBlacklist.Add(name);
-		SaveManager.SaveData<string[]>([.. moduleBlacklist], "blacklist", SaveManager.debugSavePath);
+		SaveManager.SaveData<string[]>("blacklist", [.. moduleBlacklist], configFolder + "misc.config");
 		for (int i = activeModules.Count - 1; i >= 0; i--) {
 			if (activeModules[i].name == name) {
 				activeModules.RemoveAt(i);

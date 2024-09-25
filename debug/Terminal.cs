@@ -5,8 +5,10 @@ using Raylib_cs;
 namespace YarEngine.Debug;
 
 public class Terminal : DebugModule {
+	bool ignoreCase;
 	bool open = false;
 	public bool cheatMode = false;
+
 	Dictionary<string, Action<string>> commandList = [];
 
 	public int LinesShown {
@@ -16,12 +18,17 @@ public class Terminal : DebugModule {
 	private int lineIndex = 0;
 	string[] lines = new string[16];
 
-	public Terminal() {
-		cheatMode = SaveManager.GetData<bool>("cheatMode", SaveManager.debugSavePath);
+	public Terminal() : base() {
+		LoadProp<bool>("NOTE", false, "configGen doesn't work with terminal, the config file must be created by hand");
+		cheatMode = LoadProp<bool>("cheatMode", false, "enables more powerfull commands that can break the game");
+		ignoreCase = LoadProp<bool>("ignoreCase", false, "match case when executing commands");
 		ClearTerminal("");
 		Echo(" --WELCOME TO THE DEBUG TERMINAL--");
 		if (cheatMode) {
 			Echo(" cheatmode enabled");
+		}
+		else {
+			Echo(" cheatmode disabled. only basic commands available");
 		}
 		AddCommand("help", Help, false);
 		AddCommand("echo", Echo, false);
@@ -51,7 +58,8 @@ public class Terminal : DebugModule {
 			return;
 		}
 		else if (Raylib.IsKeyPressed(KeyboardKey.Tab)) {
-			AutoFill();
+			AutoFillStart();
+
 		}
 		else if (Raylib.IsKeyPressed(KeyboardKey.Enter)) {
 			ExecuteString(lines[lineIndex]);
@@ -65,6 +73,30 @@ public class Terminal : DebugModule {
 				lines[lineIndex] += (char)key;
 			}
 		}
+	}
+	private void AutoFillStart() {
+		string input = lines[lineIndex];
+		string longestMatch = "";
+		Echo(lines[lineIndex]);
+		foreach (string command in commandList.Keys) {
+			Console.WriteLine("input:" + input + " checking command:" + command + " current longest:" + longestMatch);
+			if (command.StartsWith(input)) {
+				Echo(command);
+				if (longestMatch == "") {
+					longestMatch = command;
+				}
+				else {
+					int i = 0;
+					while (i < longestMatch.Length && i < command.Length && longestMatch[i] == command[i]) {
+						i++;
+					}
+					longestMatch = longestMatch[0..i];
+				}
+
+			}
+		}
+		lines[lineIndex] = longestMatch;
+
 	}
 	public void AutoFill() {
 		string input = lines[lineIndex];
@@ -169,6 +201,9 @@ public class Terminal : DebugModule {
 		if (splitIndex != -1 && splitIndex != line.Length - 1) {
 			options = line[(splitIndex + 1)..];
 			command = line[..splitIndex];
+			if (ignoreCase) {
+				command = command.ToLower();
+			}
 		}
 		Console.WriteLine("executing command '" + command + "' with options'" + options + "'");
 		if (commandList.TryGetValue(command, out Action<string>? value)) {
@@ -193,6 +228,9 @@ public class Terminal : DebugModule {
 		}
 	}
 	public void AddCommand(string name, Action<String> command, bool cheatModeOnly = true) {
+		if (ignoreCase) {
+			name = name.ToLower();
+		}
 		if (!cheatModeOnly || cheatMode) {
 			commandList[name] = command;
 		}
@@ -261,13 +299,13 @@ public class Terminal : DebugModule {
 		}
 		if (options == "t" || options == "true") {
 			cheatMode = true;
-			SaveManager.SaveData<bool>(true, "cheatMode", SaveManager.debugSavePath);
+			SaveProp<bool>("cheatMode", true);
 			Echo("cheat mode activated");
 			Echo("restart to apply changes");
 			return;
 		}
 		if (options == "f" || options == "false") {
-			SaveManager.SaveData<bool>(false, "cheatMode", SaveManager.debugSavePath);
+			SaveProp<bool>("cheatMode", false);
 			Echo("cheat mode deactivated");
 			Echo("restart to apply changes");
 			return;

@@ -7,7 +7,6 @@ public delegate object LoadType(string s);
 public delegate string SaveType(object o);
 public static class SaveManager {
 	public static string savePath = "save.txt";
-	public static string debugSavePath = "debug.txt";
 	private static Dictionary<Type, SaveType> saveMethods = new() {
 		{typeof(string[]), i=>{
 				return string.Join(",",(string[])i);}},
@@ -45,7 +44,8 @@ public static class SaveManager {
 		saveMethods[typeof(T)] = saveMethod;
 		loadMethods[typeof(T)] = loadMethod;
 	}
-	public static void SaveData<T>(T data, string name, string? path = null) {
+
+	public static void SaveData<T>(string name, T data, string? path = null) {
 		path ??= savePath;
 		SortedDictionary<string, string> variables = GetSaveDataDict(path);
 		if (saveMethods.ContainsKey(typeof(T))) {
@@ -67,6 +67,26 @@ public static class SaveManager {
 		}
 		return false;
 	}
+	/**<summary>
+	 * tries to load data from the given save file,
+	 * returns def value if the name isnt found in the save
+	 * <summary>
+	 */
+	public static T GetData<T>(string name, T def, string? path = null) {
+		path ??= savePath;
+
+		SortedDictionary<string, string> dict = GetSaveDataDict(path);
+		if (dict.ContainsKey(name)) {
+			return (T)loadMethods[typeof(T)](dict[name]);
+		}
+		Console.WriteLine("data name " + name + "not found in " + path);
+		return def;
+	}
+	/**<summary>
+	 * tries to load data from the given save file,
+	 * returns value loaded from an empty string if it isn't in the save file
+	 * <summary>
+	 */
 	public static T? GetData<T>(string name, string? path = null) {
 		path ??= savePath;
 		Console.WriteLine(GetSaveDataDict(path) + path);
