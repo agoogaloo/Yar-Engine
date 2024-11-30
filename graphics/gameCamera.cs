@@ -41,6 +41,15 @@ public class GameCamera(Vector2 size) {
 			Console.WriteLine("WARNING: no method for drawing shape" + s.GetType());
 		}
 	}
+	public void DrawText(Font font, string text, Vector2 pos, Color? tint = null) {
+		tint ??= Color.White;
+
+		pos -= offset;
+		pos.X = (float)Math.Round(pos.X - 0.5f);
+		pos.Y = (float)Math.Round(pos.Y - 0.5f);
+
+		Raylib.DrawTextEx(font, text, pos, font.BaseSize, 1, (Color)tint);
+	}
 	private void DrawRect(Rect r, Color col) {
 		Raylib.DrawRectangleLines((int)Math.Round(r.X - offset.X), (int)Math.Round(r.Y - offset.Y),
 		 (int)(r.Width + 0.5), (int)(r.Height + 0.5), col);
@@ -49,6 +58,7 @@ public class GameCamera(Vector2 size) {
 		Vector2 drawLoc = c.Centre - offset;
 		Raylib.DrawCircleLinesV(drawLoc, c.radius, col);
 	}
+
 	public void Centre(Vector2 position) {
 		offset.X = position.X - screenSize.X / 2;
 		offset.Y = position.Y - screenSize.Y / 2;
