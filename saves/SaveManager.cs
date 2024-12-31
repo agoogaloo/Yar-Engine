@@ -54,7 +54,14 @@ public static class SaveManager {
 		else {
 			variables[name] = data.ToString();
 		}
+		// making the folder for the file if it doesnt exist
+		if (!File.Exists(path)) {
+			string folder = Path.GetDirectoryName(path);
+			Console.WriteLine("making folder: " + folder);
+			Directory.CreateDirectory(folder);
+		}
 
+		// writing new data to file
 		File.WriteAllText(path, "");
 		foreach (KeyValuePair<string, string> pair in variables) {
 			File.AppendAllText(path, pair.Key + ":" + pair.Value + "\n");

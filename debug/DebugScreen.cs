@@ -140,11 +140,15 @@ public class DebugScreen {
 		terminal.Echo("by default options are set in res/saves/debug/<modName>.config");
 	}
 	public void ConfigGenCommand(string option) {
+		if (option == "-h" || option == "") {
+			terminal.Echo("params: <string> module");
+			terminal.Echo("generates a config file for the given module");
+		}
 		if (possibleModules.ContainsKey(option)) {
 			terminal.Echo("Generating config");
 			SaveManager.SaveData<bool>("generateConfig", true, "res/saves/debug/misc.config");
 			SaveAddModule(option);
-			SaveManager.SaveData<bool>("generateConfig", true, "res/saves/debug/misc.config");
+			SaveManager.SaveData<bool>("generateConfig", false, "res/saves/debug/misc.config");
 		}
 		return;
 
