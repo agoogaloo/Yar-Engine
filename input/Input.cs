@@ -4,11 +4,10 @@ namespace YarEngine.Inputs;
 
 public enum GPadInput {
 	//buttons
-	A, B, X, Y, Start, Back, RStick, LStick, RShoulder, LShoulder,
+	FaceD, FaceR, X, Y, Start, Back, RStick, LStick, RShoulder, LShoulder,
 	//dpad
 	DUp, DLeft, DRight, DDown,
-	//analog
-	//sticks
+	//analog sticks
 	RStickUp, RStickDown, RStickLeft, RStickRight, LStickUp, LStickDown, LStickLeft, LStickRight,
 	//triggers
 	RTrigger, LTrigger
@@ -43,21 +42,21 @@ public class InputHandler {
 			}
 		}
 		//updating the controller inputs
-		/* foreach (KeyValuePair<GPadInput, string> binding in controllerBinds) { */
-		/* 	float strength = GPadInputStength(binding.Key, PlayerIndex.One); */
-		/* 	if (strength >= DeadZone) { */
-		/* 		if (buttons.ContainsKey(binding.Value)) { */
-		/* 			buttons[binding.Value].hold(); */
-		/* 		} */
-		/* 		else if (analogInputs.ContainsKey(binding.Value)) { */
-		/* 			analogInputs[binding.Value].updateVal(strength); */
-		/* 		} */
-		/* 		else { */
-		/* 			Console.WriteLine("input '" + binding.Key + "' does not belong to an input, but is still a controller binding?"); */
-		/* 		} */
-		/* 	} */
-		/* } */
-		/**/
+		foreach (KeyValuePair<GPadInput, string> binding in controllerBinds) {
+			float strength = GPadInputStength(binding.Key, 0);
+			if (strength >= DeadZone) {
+				if (buttons.ContainsKey(binding.Value)) {
+					buttons[binding.Value].Hold();
+				}
+				else if (analogInputs.ContainsKey(binding.Value)) {
+					analogInputs[binding.Value].UpdateVal(strength);
+				}
+				else {
+					Console.WriteLine("input '" + binding.Key + "' does not belong to an input, but is still a controller binding?");
+				}
+			}
+		}
+
 		//updating the input objects
 		foreach (KeyValuePair<string, Button> button in buttons) {
 			button.Value.Update(time);
@@ -76,64 +75,65 @@ public class InputHandler {
 	/// <returns>buttons return 1 or  if they are pressed or not, 
 	/// sticks/triggers return a float from 0-1, 
 	/// and an invalid input will return -1 (this should be impossible) </returns>
-	/* private static float GPadInputStength(GPadInput input, PlayerIndex player) { */
-	/* 	switch (input) { */
-	/* 		//buttons */
-	/* 		case GPadInput.A: */
-	/* 			return GamePad.GetState(player).Buttons.A == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.B: */
-	/* 			return GamePad.GetState(player).Buttons.B == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.X: */
-	/* 			return GamePad.GetState(player).Buttons.X == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.Y: */
-	/* 			return GamePad.GetState(player).Buttons.Y == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.Start: */
-	/* 			return GamePad.GetState(player).Buttons.Start == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.Back: */
-	/* 			return GamePad.GetState(player).Buttons.Back == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.LShoulder: */
-	/* 			return GamePad.GetState(player).Buttons.LeftShoulder == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.RShoulder: */
-	/* 			return GamePad.GetState(player).Buttons.RightShoulder == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.LStick: */
-	/* 			return GamePad.GetState(player).Buttons.LeftStick == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.RStick: */
-	/* 			return GamePad.GetState(player).Buttons.RightStick == ButtonState.Pressed ? 1 : 0; */
-	/* 		//d-pad */
-	/* 		case GPadInput.DUp: */
-	/* 			return GamePad.GetState(player).DPad.Up == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.DDown: */
-	/* 			return GamePad.GetState(player).DPad.Down == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.DLeft: */
-	/* 			return GamePad.GetState(player).DPad.Left == ButtonState.Pressed ? 1 : 0; */
-	/* 		case GPadInput.DRight: */
-	/* 			return GamePad.GetState(player).DPad.Right == ButtonState.Pressed ? 1 : 0; */
-	/* 		//joysticks */
-	/* 		case GPadInput.LStickUp: */
-	/* 			return Math.Max(GamePad.GetState(player).ThumbSticks.Left.Y, 0); */
-	/* 		case GPadInput.LStickDown: */
-	/* 			return Math.Max(-GamePad.GetState(player).ThumbSticks.Left.Y, 0); */
-	/* 		case GPadInput.LStickLeft: */
-	/* 			return Math.Max(-GamePad.GetState(player).ThumbSticks.Left.X, 0); */
-	/* 		case GPadInput.LStickRight: */
-	/* 			return Math.Max(GamePad.GetState(player).ThumbSticks.Left.X, 0); */
-	/* 		case GPadInput.RStickUp: */
-	/* 			return Math.Max(GamePad.GetState(player).ThumbSticks.Right.Y, 0); */
-	/* 		case GPadInput.RStickDown: */
-	/* 			return Math.Max(-GamePad.GetState(player).ThumbSticks.Right.Y, 0); */
-	/* 		case GPadInput.RStickLeft: */
-	/* 			return Math.Max(-GamePad.GetState(player).ThumbSticks.Right.X, 0); */
-	/* 		case GPadInput.RStickRight: */
-	/* 			return Math.Max(GamePad.GetState(player).ThumbSticks.Right.X, 0); */
-	/* 		//triggers */
-	/* 		case GPadInput.LTrigger: */
-	/* 			return GamePad.GetState(player).Triggers.Left; */
-	/* 		case GPadInput.RTrigger: */
-	/* 			return GamePad.GetState(player).Triggers.Right; */
-	/* 		default: */
-	/* 			return -1; */
-	/* 	} */
-	/* } */
+	private static float GPadInputStength(GPadInput input, int gamePad) {
+		switch (input) {
+			//buttons 
+			case GPadInput.FaceD:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceDown) ? 1 : 0;
+			case GPadInput.FaceR:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceRight) ? 1 : 0;
+
+			/*case GPadInput.X: */
+			/*	return GamePad.GetState(player).Buttons.X == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.Y: */
+			/*	return GamePad.GetState(player).Buttons.Y == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.Start: */
+			/*	return GamePad.GetState(player).Buttons.Start == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.Back: */
+			/*	return GamePad.GetState(player).Buttons.Back == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.LShoulder: */
+			/*	return GamePad.GetState(player).Buttons.LeftShoulder == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.RShoulder: */
+			/*	return GamePad.GetState(player).Buttons.RightShoulder == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.LStick: */
+			/*	return GamePad.GetState(player).Buttons.LeftStick == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.RStick: */
+			/*	return GamePad.GetState(player).Buttons.RightStick == ButtonState.Pressed ? 1 : 0; */
+			/*//d-pad */
+			/*case GPadInput.DUp: */
+			/*	return GamePad.GetState(player).DPad.Up == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.DDown: */
+			/*	return GamePad.GetState(player).DPad.Down == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.DLeft: */
+			/*	return GamePad.GetState(player).DPad.Left == ButtonState.Pressed ? 1 : 0; */
+			/*case GPadInput.DRight: */
+			/*	return GamePad.GetState(player).DPad.Right == ButtonState.Pressed ? 1 : 0; */
+			//joysticks 
+			case GPadInput.LStickUp:
+				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftY), 0);
+			case GPadInput.LStickDown:
+				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftY), 0);
+			case GPadInput.LStickLeft:
+				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftX), 0);
+			case GPadInput.LStickRight:
+				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftX), 0);
+			/*case GPadInput.RStickUp: */
+			/*	return Math.Max(GamePad.GetState(player).ThumbSticks.Right.Y, 0); */
+			/*case GPadInput.RStickDown: */
+			/*	return Math.Max(-GamePad.GetState(player).ThumbSticks.Right.Y, 0); */
+			/*case GPadInput.RStickLeft: */
+			/*	return Math.Max(-GamePad.GetState(player).ThumbSticks.Right.X, 0); */
+			/*case GPadInput.RStickRight: */
+			/*	return Math.Max(GamePad.GetState(player).ThumbSticks.Right.X, 0); */
+			/*//triggers */
+			/*case GPadInput.LTrigger: */
+			/*	return GamePad.GetState(player).Triggers.Left; */
+			/*case GPadInput.RTrigger: */
+			/*	return GamePad.GetState(player).Triggers.Right; */
+			default:
+				return -1;
+		}
+	}
 
 	public static void AddButtonBind(string name, KeyboardKey binding) {
 		if (!buttons.ContainsKey(name)) {
