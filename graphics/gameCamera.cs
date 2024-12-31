@@ -50,6 +50,14 @@ public class GameCamera(Vector2 size) {
 
 		Raylib.DrawTextEx(font, text, pos, font.BaseSize, 1, (Color)tint);
 	}
+	public void DrawLine(Vector2 p1, Vector2 p2, Color? tint = null) {
+		tint ??= Color.White;
+		p1 -= offset;
+		p2 -= offset;
+		Raylib.DrawLine((int)Math.Round(p1.X), (int)Math.Round(p1.Y), (int)Math.Round(p2.X), (int)Math.Round(p2.Y), (Color)tint);
+
+
+	}
 	private void DrawRect(Rect r, Color col) {
 		Raylib.DrawRectangleLines((int)Math.Round(r.X - offset.X), (int)Math.Round(r.Y - offset.Y),
 		 (int)(r.Width + 0.5), (int)(r.Height + 0.5), col);
