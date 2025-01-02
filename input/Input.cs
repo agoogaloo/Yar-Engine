@@ -110,13 +110,21 @@ public class InputHandler {
 			/*	return GamePad.GetState(player).DPad.Right == ButtonState.Pressed ? 1 : 0; */
 			//joysticks 
 			case GPadInput.LStickUp:
-				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftY), 0);
-			case GPadInput.LStickDown:
 				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftY), 0);
+			case GPadInput.LStickDown:
+				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftY), 0);
 			case GPadInput.LStickLeft:
 				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftX), 0);
 			case GPadInput.LStickRight:
 				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.LeftX), 0);
+			case GPadInput.RStickUp:
+				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.RightY), 0);
+			case GPadInput.RStickDown:
+				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.RightY), 0);
+			case GPadInput.RStickLeft:
+				return Math.Max(-Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.RightX), 0);
+			case GPadInput.RStickRight:
+				return Math.Max(Raylib.GetGamepadAxisMovement(gamePad, GamepadAxis.RightX), 0);
 			/*case GPadInput.RStickUp: */
 			/*	return Math.Max(GamePad.GetState(player).ThumbSticks.Right.Y, 0); */
 			/*case GPadInput.RStickDown: */
