@@ -16,18 +16,24 @@ public class GameCamera(Vector2 size) {
 
 
 	public void DrawTexture(Texture2D texture, Vector2 pos, Color? tint = null) {
-		DrawTexture(texture, pos, new Rectangle(0, 0, texture.Width, texture.Height), tint);
+		DrawTexture(texture, pos, new Rectangle(0, 0, texture.Width, texture.Height), tint: tint);
 	}
-	public void DrawTexture(Texture2D texture, Vector2 pos, Rectangle sourceRect, Color? tint = null) {
+	public void DrawTexture(Texture2D texture, Vector2 pos, Rectangle sourceRect, float rotation = 0, Color? tint = null) {
 		tint ??= Color.White;
 
 		pos -= offset;
 		// pos.X -= 0.5f;
 		// pos.Y -= 0.5f;
-		pos.X = (float)Math.Round(pos.X - 0.5f);
-		pos.Y = (float)Math.Round(pos.Y - 0.5f);
+		pos.X = MathF.Round(pos.X - 0.5f);
+		pos.Y = MathF.Round(pos.Y - 0.5f);
 
-		Raylib.DrawTextureRec(texture, sourceRect, pos, (Color)tint);
+		float w = sourceRect.Width, h = sourceRect.Height;
+
+		Rectangle destRect = new(MathF.Round(pos.X + w / 2f), MathF.Round(pos.Y + h / 2), w, h);
+		Vector2 origin = new(MathF.Round(w / 2), MathF.Round(h / 2));
+
+		Raylib.DrawTexturePro(texture, sourceRect, destRect, origin, rotation, (Color)tint);
+		/*Raylib.DrawTextureRec(texture, sourceRect, pos, (Color)tint);*/
 		// Raylib.DrawTexture(texture, (int)Math.Round(x - 0.5 - offset.X), (int)Math.Round(y - 0.5 - offset.X), (Color)tint);
 	}
 	public void DrawShape(Shape s, Color col) {

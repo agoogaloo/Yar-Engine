@@ -21,6 +21,7 @@ public class Sprite {
 	public int frameWidth, frameHeight;
 	public int hFrames = 1, vFrames = 1, frame = 0;
 	public double frameDelay = 0.1f, frameTimer = 0;
+	public float rotation = 0;
 	public bool loop = true, playing = true;
 
 	public Sprite(Texture2D texture, Vector2 offset = new()) : this(texture, 1, offset) { }
@@ -58,7 +59,7 @@ public class Sprite {
 			loc.X -= frameWidth / 2f - 0.5f;
 			loc.Y -= frameHeight / 2f - 0.5f;
 		}
-		cam.DrawTexture(texture, loc, new Rectangle(frameWidth * frame, 0, frameWidth, frameHeight));
+		cam.DrawTexture(texture, loc, new Rectangle(frameWidth * frame, 0, frameWidth, frameHeight), rotation);
 	}
 	public void Draw(GameCamera cam, Shape shape) {
 		Draw(cam, shape.Centre);
