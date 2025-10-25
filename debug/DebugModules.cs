@@ -14,13 +14,13 @@ public abstract class DebugModule {
 	public float fontSize = 2;
 	private bool generateConfig;
 	public DebugModule(Font? f = null, string? configFolder = null) {
-		this.font = f ?? DebugScreen.defaultFont;
+		font = f ?? DebugScreen.defaultFont;
 		fontSize = font.BaseSize * DebugScreen.fontScale;
 		configFolder ??= DebugScreen.configFolder;
-		this.generateConfig = SaveManager.GetData<bool>("generateConfig", DebugScreen.configFolder + "misc.config");
-		name = this.GetType().Name;
+		generateConfig = SaveManager.GetData<bool>("generateConfig", DebugScreen.configFolder + "misc.config");
+		name = GetType().Name;
 		configPath = configFolder + name + ".config";
-		Console.WriteLine(name + "fontsize:" + DebugScreen.fontScale + ", " + this.fontSize);
+		Console.WriteLine(name + "fontsize:" + DebugScreen.fontScale + ", " + fontSize);
 	}
 	public virtual void OnAdd() { }
 	public virtual void Update(double time) { }
