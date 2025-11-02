@@ -31,7 +31,8 @@ public class DebugScreen {
 	public void Update(double time) {
 		foreach (DebugModule m in activeModules) {
 			m.Update(time);
-		};
+		}
+		;
 		terminal.Update(time);
 	}
 	public void DrawPixel(GameCamera cam) {
@@ -60,12 +61,14 @@ public class DebugScreen {
 		if (moduleBlacklist.Contains(m.name)) {
 			return;
 		}
+		// remove module if it is active
 		for (int i = 0; i < activeModules.Count; i++) {
 			if (activeModules[i].name == m.name) {
 				activeModules.RemoveAt(i);
 				break;
 			}
 		}
+		// add module
 		activeModules.Add(m);
 		m.OnAdd();
 	}
@@ -140,21 +143,49 @@ public class DebugScreen {
 		terminal.Echo("by default options are set in res/saves/debug/<modName>.config");
 	}
 	public void ConfigGenCommand(string option) {
-		if (option == "-h" || option == "") {
-			terminal.Echo("params: <string> module");
-			terminal.Echo("generates a config file for the given module");
-		}
+
 		if (possibleModules.ContainsKey(option)) {
 			terminal.Echo("Generating config");
 			SaveManager.SaveData<bool>("generateConfig", true, "res/saves/debug/misc.config");
 			SaveAddModule(option);
 			SaveManager.SaveData<bool>("generateConfig", false, "res/saves/debug/misc.config");
 		}
-		return;
+		else if (option.ToLower().Equals("active")) {
 
+			// get all active modules
+			List<String> activeNames = [];
+			foreach (DebugModule m in activeModules) {
+				activeNames.Add(m.name);
+			}
+			// Console.WriteLine("configs to generate :" + activeNames.pr);
+			SaveManager.SaveData("generateConfig", true, "res/saves/debug/misc.config");
+
+			// readd them all to generate configs
+			foreach (String n in activeNames) {
+				terminal.Echo("generating config for " + n);
+				SaveAddModule(n);
+			}
+			SaveManager.SaveData("generateConfig", false, "res/saves/debug/misc.config");
+			return;
+
+		}
+
+		else if (option.ToLower().Equals("all")) {
+
+			// get all active modules
+			List<String> activeNames = [];
+			SaveManager.SaveData("generateConfig", true, "res/saves/debug/misc.config");
+			foreach ( String m in possibleModules.Keys) {
+				terminal.Echo("generating config for " + m);
+				SaveAddModule(m);
+			}
+			return;
+
+		}
 		//displaying help message if input isn't valid
 		terminal.Echo("params: <string> module");
 		terminal.Echo("generates a config for the given module");
+		terminal.Echo("use 'active' to generate config for all active modules");
 		terminal.Echo("debug module must be active for this command to work");
 		terminal.Echo("by default options are set in res/saves/debug/<modName>.config");
 
