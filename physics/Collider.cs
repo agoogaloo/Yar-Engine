@@ -28,11 +28,11 @@ public class Collider<BaseType> : ICollider<BaseType> {
 	}
 
 	public void Remove() {
-		CollisionManager.removeCollider<BaseType>(this);
+		CollisionManager.RemoveCollider(this);
 	}
 
 	public void Add() {
-		CollisionManager.AddCollider<BaseType>(this);
+		CollisionManager.AddCollider(this);
 	}
 
 }

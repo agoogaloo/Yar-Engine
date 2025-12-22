@@ -18,12 +18,12 @@ public class CollisionManager {
 			colList.AddLast((ICollider<object>)collider);
 		}
 	}
-	public static void removeCollider<T>(Collider<T> collider) {
+	public static void RemoveCollider<T>(Collider<T> collider) {
 		if (groupDict.ContainsKey(typeof(T)) && groupDict[typeof(T)].ContainsKey(collider.Group)) {
 			groupDict[typeof(T)][collider.Group].Remove((ICollider<object>)collider);
 		}
 	}
-	public static List<Type> getLayerTypes() {
+	public static List<Type> GetLayerTypes() {
 		return groupDict.Keys.ToList();
 	}
 	public static LinkedList<ICollider<Object>> GetLayer<T>(String name = "") {
@@ -32,5 +32,17 @@ public class CollisionManager {
 		}
 		Console.WriteLine("WARNING: Collision Layer " + name + " with type " + typeof(T) + " not found");
 		return [];
+	}
+
+	public static void DoCollision<T>(Shape s, Action<Collider<T>> onCollide, string group = "", bool pixelSnapped = true) {
+		//checking if there is a collision layer with the matching name and type
+		foreach (ICollider<object> collider in GetLayer<T>(group)) {
+			if (collider.Bounds.Intersects(s, pixelSnapped) ) {
+				onCollide((Collider<T>)collider);
+			}
+		}
+	}
+	public void DoCollision<T>(Shape s, Action<T> onCollide, string group = "", bool pixelSnapped = true) {
+		DoCollision<T>(s, i => onCollide(i.collisionObject), group, pixelSnapped);
 	}
 }
