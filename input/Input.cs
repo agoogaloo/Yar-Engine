@@ -1,3 +1,4 @@
+using System.Numerics;
 using Raylib_cs;
 
 namespace YarEngine.Inputs;
@@ -171,6 +172,14 @@ public class InputHandler {
 		}
 		return null;
 
+	}
+
+	public static Vector2 MousePos() {
+		Vector2 screenLoc = Raylib.GetMousePosition();
+		return screenLoc - GameBase.ScreenOffset;
+	}
+	public static Vector2 MousePosPixel() {
+		return MousePos() / GameBase.PixelScale;
 	}
 }
 

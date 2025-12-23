@@ -30,7 +30,7 @@ public static class GameBase {
 		}
 	}
 	public static float PixelScale { get; private set; } = 3;
-	private static Vector2 screenOffset = Vector2.Zero;
+	public static Vector2 ScreenOffset { get; private set; } = Vector2.Zero;
 
 	private static Vector2 gameSize = new(320, 180);
 	public static Vector2 GameSize {
@@ -101,7 +101,6 @@ public static class GameBase {
 		pixelDraw(gameCam);
 		if (debugMode) {
 			debugScreen.DrawPixel(gameCam);
-			// CollisionManager.DrawCollisionLayers(gameCam);
 		}
 		Raylib.EndMode2D();
 		Raylib.EndTextureMode();
@@ -121,7 +120,7 @@ public static class GameBase {
 
 		//drawing final scaled texture to the screen
 		screenRect = new Rectangle(0, 0, (int)(gameSize.X * PixelScale), (int)(-gameSize.Y * PixelScale));
-		windowRect = new Rectangle((int)screenOffset.X, (int)screenOffset.Y, gameSize.X * PixelScale, gameSize.Y * PixelScale);
+		windowRect = new Rectangle((int)ScreenOffset.X, (int)ScreenOffset.Y, gameSize.X * PixelScale, gameSize.Y * PixelScale);
 
 		Raylib.BeginDrawing();
 		Raylib.ClearBackground(borderCol);
@@ -145,7 +144,7 @@ public static class GameBase {
 		float yDiff = gameSize.Y * PixelScale - Raylib.GetScreenHeight();
 
 		//updating all the screen size dependant variables
-		screenOffset = new((int)(-xDiff / 2), (int)(-yDiff / 2));
+		ScreenOffset = new((int)(-xDiff / 2), (int)(-yDiff / 2));
 		pixelTex = Raylib.LoadRenderTexture((int)GameSize.X, (int)GameSize.Y);
 		finalTex = Raylib.LoadRenderTexture((int)(GameSize.X * PixelScale), (int)(GameSize.Y * PixelScale));
 	}
