@@ -20,7 +20,7 @@ public class Sprite {
 	public bool centered = true;
 	public int frameWidth, frameHeight;
 	public int hFrames = 1, vFrames = 1, frame = 0;
-	public double frameDelay = 0.1f, frameTimer = 0;
+	public float frameDelay = 0.1f, frameTimer = 0;
 	public bool loop = true, playing = true;
 
 	public Sprite(Texture2D texture, Vector2 offset = new()) : this(texture, 1, offset) { }
@@ -34,7 +34,7 @@ public class Sprite {
 
 	}
 
-	public void Update(double time) {
+	public void Update(float time) {
 		if (!playing) return;
 
 		frameTimer += time;

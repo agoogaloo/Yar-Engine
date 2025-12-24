@@ -15,7 +15,7 @@ public class EntityManager {
 	private static List<List<Entity>> entities = [];
 	private static List<Entity> entitiesToAdd = [];
 
-	public static void Update(double updateTime) {
+	public static void Update(float updateTime) {
 		foreach (List<Entity> list in entities) {
 			foreach (Entity e in list) {
 				e.Update(updateTime);
