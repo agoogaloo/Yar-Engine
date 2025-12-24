@@ -30,6 +30,7 @@ public static class GameBase {
 		}
 	}
 	public static float PixelScale { get; private set; } = 3;
+	public static double updateTime = 1 / 120;
 	public static Vector2 ScreenOffset { get; private set; } = Vector2.Zero;
 
 	private static Vector2 gameSize = new(320, 180);
@@ -56,7 +57,7 @@ public static class GameBase {
 
 	public static void Init(string name = "cool title") {
 		Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
-		Raylib.SetConfigFlags(ConfigFlags.VSyncHint);
+		// Raylib.SetConfigFlags(ConfigFlags.VSyncHint);
 		Raylib.InitWindow((int)(gameSize.X * PixelScale), (int)(gameSize.Y * PixelScale), name);
 
 		GameSize *= 1;
@@ -72,24 +73,31 @@ public static class GameBase {
 		debugScreen.terminal.AddCommand("skip", SkipCommand);
 	}
 	public static void Run() {
+		double timePassed = 0;
 		while (!Raylib.WindowShouldClose()) {
-			Update();
+			timePassed += Raylib.GetFrameTime() * gameSpeedMulti;
+			while (timePassed > updateTime) {
+				Update(updateTime);
+				timePassed -= updateTime;
+			}
+
+			if (debugMode) {
+				debugScreen.Update(Raylib.GetFrameTime() * gameSpeedMulti);
+			}
+			if (Raylib.IsWindowResized()) {
+				FixResize();
+			}
+
 			DrawGame();
 		}
 		Raylib.CloseWindow();
 	}
-	private static void Update() {
-		InputHandler.Update(Raylib.GetFrameTime() * gameSpeedMulti);
-		updateMethod(Raylib.GetFrameTime() * gameSpeedMulti);
+	private static void Update(double time) {
+		InputHandler.Update(time);
+		updateMethod((float)time);
 		if (InputHandler.GetButton("Debug") != null && InputHandler.GetButton("Debug").JustPressed) {
 			debugMode = !debugMode;
 			Console.WriteLine("Debug Mode:" + debugMode);
-		}
-		if (debugMode) {
-			debugScreen.Update(Raylib.GetFrameTime());
-		}
-		if (Raylib.IsWindowResized()) {
-			FixResize();
 		}
 	}
 
