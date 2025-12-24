@@ -7,7 +7,7 @@ namespace YarEngine.Debug;
 
 public class FModify : DebugModule {
 	private static List<string> names = [];
-	private static Dictionary<string, float> values = new();
+	private static Dictionary<string, float[]> values = new();
 	private Vector2 loc;
 	private int textHeight, selected = -1;
 
@@ -28,6 +28,10 @@ public class FModify : DebugModule {
 		float speedMod = 1;
 
 
+		if (Raylib.IsMouseButtonDown(MouseButton.Middle)) {
+			values[selectedName][0] = values[selectedName][1];
+			return;
+		}
 		if (Raylib.IsMouseButtonDown(MouseButton.Left)) {
 			speedMod++;
 		}
@@ -40,7 +44,7 @@ public class FModify : DebugModule {
 			speedMod = 1f / speedMod;
 		}
 
-		values[selectedName] += 1 * speedMod * Raylib.GetMouseWheelMove();
+		values[selectedName][0] += 1 * speedMod * Raylib.GetMouseWheelMove();
 
 	}
 	private void FindSelection() {
@@ -67,21 +71,21 @@ public class FModify : DebugModule {
 				col = Color.Gray;
 			}
 
-			Raylib.DrawTextEx(font, names[i] + String.Format(":{0:F2}", values[names[i]]), drawLoc, fontSize, 1, col);
+			Raylib.DrawTextEx(font, names[i] + String.Format(":{0:F2}", values[names[i]][0]), drawLoc, fontSize, 1, col);
 			drawLoc.Y += textHeight;
 		}
 	}
 
 	public static float Get(string name, float def = 0f) {
 		if (!values.ContainsKey(name)) {
-			values[name] = def;
+			values[name] = [def, def];
 			names.Add(name);
 		}
-		return values[name];
+		return values[name][0];
 	}
-	public static void Set(string name, float val) {
-		values[name] = val;
-	}
+	// public static void Set(string name, float val) {
+	// 	values[name] = val;
+	// }
 
 
 
