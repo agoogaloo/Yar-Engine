@@ -50,6 +50,7 @@ public class FPSDisplay : DebugModule {
 		Raylib.DrawFPS((int)pos.X, (int)pos.Y);
 	}
 }
+
 public class EntityCount : DebugModule {
 	public Vector2 pos;
 	public bool showLayers;
@@ -66,6 +67,30 @@ public class EntityCount : DebugModule {
 		}
 		else {
 			Raylib.DrawTextEx(font, "Entities:" + EntityManager.EntityCount, pos, fontSize, 1, colour);
+		}
+	}
+}
+
+public class Macro : DebugModule {
+
+	private Action a;
+	private Vector2 pos;
+	private KeyboardKey key;
+	public Macro(Action act, string name, KeyboardKey key) : base() {
+		this.name = "M-" + name;
+		configPath = DebugScreen.configFolder + name + ".config";
+		this.key = key;
+		a = act;
+		// don't show by default
+		pos = LoadProp<Vector2>("pos", new Vector2(-10, -100), "display location");
+	}
+	public override void DrawFull(GameCamera cam, float scale) {
+
+		Raylib.DrawTextEx(font, name + ":" + key, pos, fontSize, 1, Color.White);
+	}
+	public override void Update(double time) {
+		if (Raylib.IsKeyPressed(key)) {
+			a();
 		}
 	}
 }
