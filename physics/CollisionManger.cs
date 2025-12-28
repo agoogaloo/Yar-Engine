@@ -8,6 +8,8 @@ public interface ICollider<out T> {
 public class CollisionManager {
 	//a wacky data structure that stores collision objects based on a specified type and group
 	public static Dictionary<Type, Dictionary<string, LinkedList<ICollider<object>>>> groupDict = [];
+	public static bool PixelSnap { get; set; } = true;
+	public static bool printWarn = false;
 
 	public static void AddCollider<T>(Collider<T> collider) {
 		bool x = groupDict.TryAdd(typeof(T), []);
@@ -30,19 +32,20 @@ public class CollisionManager {
 		if (groupDict.ContainsKey(typeof(T)) && groupDict[typeof(T)].ContainsKey(name)) {
 			return groupDict[typeof(T)][name];
 		}
+		if(printWarn)
 		Console.WriteLine("WARNING: Collision Layer " + name + " with type " + typeof(T) + " not found");
 		return [];
 	}
 
-	public static void DoCollision<T>(Shape s, Action<Collider<T>> onCollide, string group = "", bool pixelSnapped = true) {
+	public static void DoCollision<T>(Shape s, Action<Collider<T>> onCollide, string group = "") {
 		//checking if there is a collision layer with the matching name and type
 		foreach (ICollider<object> collider in GetLayer<T>(group)) {
-			if (collider.Bounds.Intersects(s, pixelSnapped) ) {
+			if (collider.Bounds.Intersects(s, PixelSnap) ) {
 				onCollide((Collider<T>)collider);
 			}
 		}
 	}
-	public void DoCollision<T>(Shape s, Action<T> onCollide, string group = "", bool pixelSnapped = true) {
-		DoCollision<T>(s, i => onCollide(i.collisionObject), group, pixelSnapped);
+	public void DoCollision<T>(Shape s, Action<T> onCollide, string group = "") {
+		DoCollision<T>(s, i => onCollide(i.collisionObject), group);
 	}
 }

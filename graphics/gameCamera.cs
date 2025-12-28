@@ -7,9 +7,6 @@ namespace YarEngine.Graphics;
 public class GameCamera(Vector2 size) {
 	public Vector2 offset, screenSize = size;
 
-	public void Update(float delta) {
-
-	}
 	public void DrawPixel(Vector2 point, Color col) {
 		Raylib.DrawPixel((int)Math.Round(point.X + offset.X), (int)Math.Round(point.Y + offset.Y), col);
 	}

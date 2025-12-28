@@ -93,6 +93,12 @@ public class Rect(float x = 0, float y = 0, float width = 0, float height = 0) :
 			rectangle.Y = value.Y - Height / 2;
 		}
 	}
+	public void Copy(Rect r) {
+		X = r.X;
+		Y = r.Y;
+		Width = r.Width;
+		Height = r.Height;
+	}
 
 	public override Shape SnapToGrid() {
 		return new Rect((int)Math.Round(X), (int)Math.Round(Y), (int)Math.Round(Width), (int)Math.Round(Height));
@@ -104,5 +110,8 @@ public class Rect(float x = 0, float y = 0, float width = 0, float height = 0) :
 
 	protected override bool IntersectsRect(Rect r) {
 		return Raylib.CheckCollisionRecs(rectangle, r.rectangle);
+	}
+	public override string ToString() {
+		return "Rect[X:" + X + " Y:" + Y + " W:" + Width + " H:" + Height + "]";
 	}
 }
