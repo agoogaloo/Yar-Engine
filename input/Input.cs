@@ -5,7 +5,7 @@ namespace YarEngine.Inputs;
 
 public enum GPadInput {
 	//buttons
-	FaceD, FaceR, X, Y, Start, Back, RStick, LStick, RShoulder, LShoulder,
+	Y, A, X, B, Start, Back, RStick, LStick, RShoulder, LShoulder,
 	//dpad
 	DUp, DLeft, DRight, DDown,
 	//analog sticks
@@ -79,11 +79,23 @@ public class InputHandler {
 	private static float GPadInputStength(GPadInput input, int gamePad) {
 		switch (input) {
 			//buttons 
-			case GPadInput.FaceD:
+			case GPadInput.Y:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceUp) ? 1 : 0;
+			case GPadInput.A:
 				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceDown) ? 1 : 0;
-			case GPadInput.FaceR:
+			case GPadInput.B:
 				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceRight) ? 1 : 0;
+			case GPadInput.X:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.RightFaceLeft) ? 1 : 0;
 
+			case GPadInput.DLeft:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.LeftFaceLeft) ? 1 : 0;
+			case GPadInput.DRight:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.LeftFaceRight) ? 1 : 0;
+			case GPadInput.DUp:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.LeftFaceUp) ? 1 : 0;
+			case GPadInput.DDown:
+				return Raylib.IsGamepadButtonDown(gamePad, GamepadButton.LeftFaceDown) ? 1 : 0;
 			/*case GPadInput.X: */
 			/*	return GamePad.GetState(player).Buttons.X == ButtonState.Pressed ? 1 : 0; */
 			/*case GPadInput.Y: */

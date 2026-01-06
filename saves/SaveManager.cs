@@ -6,7 +6,7 @@ namespace YarEngine.Saves;
 public delegate object LoadType(string s);
 public delegate string SaveType(object o);
 public static class SaveManager {
-	public static string savePath = "save.txt";
+	public static string saveFile = "save.txt", rootFolder = "res/saves/";
 	private static Dictionary<Type, SaveType> saveMethods = new() {
 		{typeof(string[]), i=>{
 				return string.Join(",",(string[])i);}},
@@ -20,7 +20,10 @@ public static class SaveManager {
 		{typeof(int), i=>{return int.Parse((string)i);}},
 		{typeof(bool), i=>{ return i=="True";}},
 		{typeof(float), i=>{return float.Parse((string)i);}},
-		{typeof(string[]), i=>{return i.Split(",");}},
+		{typeof(string[]), i=>{
+								  if(i==""){ return new string[0];
+								  }
+								  return i.Split(",");}},
 		//vector loader
 		{typeof(Vector2),i=>{
 			string[] strs = i.Split(",");
@@ -45,9 +48,11 @@ public static class SaveManager {
 		loadMethods[typeof(T)] = loadMethod;
 	}
 
-	public static void SaveData<T>(string name, T data, string? path = null) {
-		path ??= savePath;
-		SortedDictionary<string, string> variables = GetSaveDataDict(path);
+	public static void SaveData<T>(string name, T data, string? folder = null, string? file = null) {
+		folder ??= rootFolder;
+		file ??= saveFile;
+		string path = folder + file;
+		SortedDictionary<string, string> variables = GetSaveDataDict(folder, file);
 		if (saveMethods.ContainsKey(typeof(T))) {
 			variables[name] = saveMethods[typeof(T)](data);
 		}
@@ -56,13 +61,13 @@ public static class SaveManager {
 		}
 		// making the folder for the file if it doesnt exist
 		if (!File.Exists(path)) {
-			string folder = Path.GetDirectoryName(path);
-			Console.WriteLine("making folder: " + folder);
-			Directory.CreateDirectory(folder);
+			string f = Path.GetDirectoryName(path);
+			Console.WriteLine("making folder: " + f);
+			Directory.CreateDirectory(f);
 		}
 
 		// create directories for save file if it doesn't exist
-		if (!File.Exists(path)){
+		if (!File.Exists(path)) {
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 
 		}
@@ -73,9 +78,12 @@ public static class SaveManager {
 			File.AppendAllText(path, pair.Key + ":" + pair.Value + "\n");
 		}
 	}
-	public static bool DataExists(string name, string? path = null) {
-		path ??= savePath;
-		if (GetSaveDataDict(path).ContainsKey(name)) {
+	public static bool DataExists(string name, string? folder = null, string? file = null) {
+		folder ??= rootFolder;
+		file ??= saveFile;
+		string path = folder + file;
+		path ??= saveFile;
+		if (GetSaveDataDict(folder, file).ContainsKey(name)) {
 			return true;
 		}
 		return false;
@@ -85,14 +93,16 @@ public static class SaveManager {
 	 * returns def value if the name isnt found in the save
 	 * <summary>
 	 */
-	public static T GetData<T>(string name, T def, string? path = null) {
-		path ??= savePath;
+	public static T GetData<T>(string name, T def, string? folder = null, string? file = null) {
+		folder ??= rootFolder;
+		file ??= saveFile;
+		string path = folder + file;
 
-		SortedDictionary<string, string> dict = GetSaveDataDict(path);
+		SortedDictionary<string, string> dict = GetSaveDataDict(folder, file);
 		if (dict.ContainsKey(name)) {
 			return (T)loadMethods[typeof(T)](dict[name]);
 		}
-		Console.WriteLine("data name " + name + "not found in " + path);
+		Console.WriteLine("data name " + name + " not found in " + path);
 		return def;
 	}
 	/**<summary>
@@ -100,27 +110,42 @@ public static class SaveManager {
 	 * returns value loaded from an empty string if it isn't in the save file
 	 * <summary>
 	 */
-	public static T? GetData<T>(string name, string? path = null) {
-		path ??= savePath;
-		Console.WriteLine(GetSaveDataDict(path) + path);
+	public static T GetData<T>(string name, string? folder = null, string? file = null) {
+		folder ??= rootFolder;
+		file ??= saveFile;
+		string path = folder + file;
+		// Console.WriteLine(GetSaveDataDict(folder, path) + path);
 		//setting the raw data as an empty string if there isn't any saved data with that name
-		if (!GetSaveDataDict(path).TryGetValue(name, out string raw)) {
-			raw = "";
+		var dict = GetSaveDataDict(folder, file);
+		if (dict.ContainsKey(name)) {
+			return (T)loadMethods[typeof(T)](dict[name]);
 		}
-		return (T)loadMethods[typeof(T)](raw);
+
+		// if (dict.TryGetValue(name, out string raw)) {
+		if (!File.Exists(path)) {
+			throw new FileNotFoundException("Save file could not be found at '" + path + "' :(");
+		}
+		else {
+			throw new FileNotFoundException("Value '" + name + "' not be found in '" + path + "' :(");
+		}
 	}
-	public static SortedDictionary<string, string> GetSaveDataDict(string? path = null) {
-		path ??= savePath;
+	public static SortedDictionary<string, string> GetSaveDataDict(string? folder=null, string? file = null) {
+		folder ??= rootFolder;
+		file ??= saveFile;
+		string path = folder + file;
 
 		string[] data = [];
 		if (File.Exists(path)) {
 			data = File.ReadAllLines(path);
 		}
-		SortedDictionary<string, string> result = new();
+		SortedDictionary<string, string> result = [];
 		foreach (string s in data) {
-			int splitIndex = s.IndexOf(":");
+			int splitIndex = s.IndexOf(':');
 			if (splitIndex != -1) {
 				result.Add(s[..splitIndex], s[(splitIndex + 1)..]);
+			}
+			else {
+				Console.WriteLine("WARNING! line '" + s + "' from file '" + path + "' has been corrupted");
 			}
 		}
 		return result;

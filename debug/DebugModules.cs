@@ -17,7 +17,7 @@ public abstract class DebugModule {
 		font = f ?? DebugScreen.defaultFont;
 		fontSize = font.BaseSize * DebugScreen.fontScale;
 		configFolder ??= DebugScreen.configFolder;
-		generateConfig = SaveManager.GetData<bool>("generateConfig", DebugScreen.configFolder + "misc.config");
+		generateConfig = SaveManager.GetData<bool>("generateConfig", DebugScreen.configFolder , "misc.config");
 		name = GetType().Name;
 		configPath = configFolder + name + ".config";
 		Console.WriteLine(name + "fontsize:" + DebugScreen.fontScale + ", " + fontSize);
@@ -29,14 +29,14 @@ public abstract class DebugModule {
 
 	protected T LoadProp<T>(string name, T def, string description = "") {
 		configProps[name] = description;
-		T propValue = SaveManager.GetData<T>(name, def, configPath);
+		T propValue = SaveManager.GetData<T>(name, def, folder: "", file: configPath);
 		if (generateConfig) {
 			SaveProp<T>(name, propValue);
 		}
 		return propValue;
 	}
 	protected void SaveProp<T>(string name, T data) {
-		SaveManager.SaveData<T>(name, data, configPath);
+		SaveManager.SaveData(name, data,"", configPath);
 	}
 }
 

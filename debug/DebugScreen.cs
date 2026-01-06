@@ -16,7 +16,7 @@ public class DebugScreen {
 	public DebugScreen() {
 		fontScale = SaveManager.GetData<float>("fontScale", 3, configFolder + "misc.config");
 		Console.WriteLine("screen fontsize:" + fontScale);
-		moduleBlacklist = new(SaveManager.GetData<string[]>("blacklist", configFolder + "misc.config"));
+		moduleBlacklist = new(SaveManager.GetData<string[]>("blacklist",[], configFolder , "misc.config"));
 		terminal = new();
 		terminal.AddCommand("debugModAdd", SaveAddModule, false);
 		terminal.AddCommand("debugModRmv", SaveRemoveModule, false);

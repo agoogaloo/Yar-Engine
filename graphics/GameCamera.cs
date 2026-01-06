@@ -42,8 +42,8 @@ public class GameCamera(Vector2 size) {
 		tint ??= Color.White;
 
 		pos -= offset;
-		pos.X = (float)Math.Round(pos.X - 0.5f);
-		pos.Y = (float)Math.Round(pos.Y - 0.5f);
+		pos.X = (float)Math.Round(pos.X);
+		pos.Y = (float)Math.Round(pos.Y);
 
 		Raylib.DrawTextEx(font, text, pos, font.BaseSize, 1, (Color)tint);
 	}
