@@ -18,6 +18,7 @@ public class Sprite {
 
 	public Vector2 offset;
 	public bool centered = true;
+	public bool flipH = false, flipV = false;
 	public int frameWidth, frameHeight;
 	public int hFrames = 1, vFrames = 1, frame = 0;
 	public float frameDelay = 0.1f, frameTimer = 0;
@@ -53,12 +54,26 @@ public class Sprite {
 	}
 	public void Draw(GameCamera cam, Vector2 loc) {
 		if (!showTextures) return;
+		Rectangle source = new Rectangle(frameWidth * frame, 0, frameWidth, frameHeight);
+
 		loc += offset;
+		if (flipH) {
+			source.Width *= -1;
+			loc.X -= 2 * offset.X;
+			loc.X-=1;
+
+		}
+		if (flipV) {
+			source.Height *= -1;
+			loc.Y -= 2 * offset.Y;
+			loc.Y-=1;
+		}
+
 		if (centered) {
 			loc.X -= frameWidth / 2f - 0.5f;
 			loc.Y -= frameHeight / 2f - 0.5f;
 		}
-		cam.DrawTexture(texture, loc, new Rectangle(frameWidth * frame, 0, frameWidth, frameHeight));
+		cam.DrawTexture(texture, loc, source);
 	}
 	public void Draw(GameCamera cam, Shape shape) {
 		Draw(cam, shape.Centre);

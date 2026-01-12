@@ -15,7 +15,7 @@ public class GameCamera(Vector2 size) {
 	public void DrawTexture(Texture2D texture, Vector2 pos, Color? tint = null) {
 		DrawTexture(texture, pos, new Rectangle(0, 0, texture.Width, texture.Height), tint);
 	}
-	public void DrawTexture(Texture2D texture, Vector2 pos, Rectangle sourceRect, Color? tint = null) {
+	public void DrawTexture(Texture2D texture, Vector2 pos, Rectangle sourceRect, Color? tint = null, bool flipX= false, bool flipY=false) {
 		tint ??= Color.White;
 
 		pos -= offset;
