@@ -95,7 +95,8 @@ public static class GameBase {
 	private static void Update(double time) {
 		InputHandler.Update(time);
 		updateMethod((float)time);
-		if (InputHandler.GetButton("Debug") != null && InputHandler.GetButton("Debug").JustPressed) {
+		if (InputHandler.GetButton("Debug") != null && InputHandler.GetButton("Debug").PressBuffered()) {
+
 			debugMode = !debugMode;
 			Console.WriteLine("Debug Mode:" + debugMode);
 		}

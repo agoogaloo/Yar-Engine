@@ -1,6 +1,8 @@
 namespace YarEngine.Inputs;
 
 public class Button {
+	public static float maxBuffer = 0.1f;
+	private float bufferTimer = 0;
 	public bool Held { get; private set; }
 
 	public double HoldTime { get; private set; }
@@ -17,17 +19,24 @@ public class Button {
 	/// updates/sets all the held/justHeld/released fields
 	/// </summary>
 	public void Update(double time) {
-		JustPressed = false;
 		JustReleased = false;
 
+		if (bufferTimer <= 0) {
+			JustPressed = false;
+		}
+
+		// JustPressed = false;
 		if (heldThisFrame) {
+			bufferTimer -= (float)time;
 			if (!Held) {
 				JustPressed = true;
+				bufferTimer = maxBuffer;
 			}
 			Held = true;
 			HoldTime += time;
 		}
 		else {
+			bufferTimer = 0;
 			if (Held) {
 				JustReleased = true;
 			}
@@ -39,11 +48,19 @@ public class Button {
 	}
 	public void Consume() {
 		JustPressed = false;
+		bufferTimer = 0;
 
 	}
 
 	public override string ToString() {
 		return "Button{" + "held:" + Held + "}";
+	}
+	public bool PressBuffered(bool consume = true) {
+		if (!JustPressed) {
+			return false;
+		}
+		Consume();
+		return true;
 	}
 }
 

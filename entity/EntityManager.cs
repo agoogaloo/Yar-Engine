@@ -1,6 +1,7 @@
 using YarEngine.Graphics;
 
 namespace YarEngine.Entities;
+
 public class EntityManager {
 	public static int EntityCount {
 		get {
@@ -62,6 +63,15 @@ public class EntityManager {
 				e.shouldRemove = true;
 			}
 		}
+	}
+	public static void ClearAll() {
+		foreach (List<Entity> list in entities) {
+			for (int i = list.Count - 1; i >= 0; i--) {
+				list[i].OnRemove();
+				list.RemoveAt(i);
+			}
+		}
+		entities = [];
 	}
 	public static void ClearCommand(string options) {
 		bool validIn = int.TryParse(options, out int layer);

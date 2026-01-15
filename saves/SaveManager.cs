@@ -5,9 +5,19 @@ namespace YarEngine.Saves;
 
 public delegate object LoadType(string s);
 public delegate string SaveType(object o);
+// TODO rewrite this to use json and not suck
 public static class SaveManager {
 	public static string saveFile = "save.txt", rootFolder = "res/saves/";
 	private static Dictionary<Type, SaveType> saveMethods = new() {
+		{typeof(float[]), i=>{
+
+				string str = "";
+				foreach(float f in (float[])i){
+					str+=f+",";
+
+				}
+
+				return str[..^1];}},
 		{typeof(string[]), i=>{
 				return string.Join(",",(string[])i);}},
 		{typeof(Vector2), i=>{
@@ -17,9 +27,19 @@ public static class SaveManager {
 	};
 	private static Dictionary<Type, LoadType> loadMethods = new(){
 		{typeof(string), i=>{return i;}},
-		{typeof(int), i=>{return int.Parse((string)i);}},
+		{typeof(int), i=>{return int.Parse(i);}},
 		{typeof(bool), i=>{ return i=="True";}},
-		{typeof(float), i=>{return float.Parse((string)i);}},
+		{typeof(float), i=>{return float.Parse(i);}},
+		{typeof(float[]), i=>{
+								  if(i==""){ return new float[0];
+								  }
+								  string[] strs= i.Split(",");
+								  float[] fs = new float[strs.Length];
+								  for(int j=0;j<strs.Length;j++){
+									  fs[j] = float.Parse(strs[j]);
+								  }
+								  return fs;
+							 }},
 		{typeof(string[]), i=>{
 								  if(i==""){ return new string[0];
 								  }
@@ -129,7 +149,7 @@ public static class SaveManager {
 			throw new FileNotFoundException("Value '" + name + "' not be found in '" + path + "' :(");
 		}
 	}
-	public static SortedDictionary<string, string> GetSaveDataDict(string? folder=null, string? file = null) {
+	public static SortedDictionary<string, string> GetSaveDataDict(string? folder = null, string? file = null) {
 		folder ??= rootFolder;
 		file ??= saveFile;
 		string path = folder + file;

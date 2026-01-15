@@ -60,7 +60,7 @@ public class Sprite {
 		if (flipH) {
 			source.Width *= -1;
 			loc.X -= 2 * offset.X;
-			loc.X-=1;
+			// loc.X-=1;
 
 		}
 		if (flipV) {
@@ -78,6 +78,12 @@ public class Sprite {
 	public void Draw(GameCamera cam, Shape shape) {
 		Draw(cam, shape.Centre);
 	}
+	public void Restart() {
+		playing = true;
+		frame = 0;
+		frameTimer = 0;
+
+	}
 	private static void HideTextureCommand(string options) {
 		if (options.ToLower() == "t" || options == "true") {
 			showTextures = true;
@@ -92,3 +98,4 @@ public class Sprite {
 	}
 
 }
+

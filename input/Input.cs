@@ -15,6 +15,7 @@ public enum GPadInput {
 }
 
 public class InputHandler {
+
 	public static double DeadZone { get; set; } = 0.25;
 
 
