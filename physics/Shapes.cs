@@ -31,6 +31,7 @@ public abstract class Shape {
 		return false;
 
 	}
+	public abstract bool Contains(Vector2 p);
 	public abstract Shape SnapToGrid();
 	protected abstract bool IntersectsRect(Rect r);
 	protected abstract bool IntersectsCircle(Circle c);
@@ -63,6 +64,11 @@ public class Circle : Shape {
 
 		}
 		return new Circle((int)Math.Round(Centre.X - 0.5) + 0.5f, (int)Math.Round(Centre.Y - 0.5) + 0.5f, roundedRad);
+	}
+
+	public override bool Contains(Vector2 p) {
+		Vector2 diff = p - Centre;
+		return diff.Length() <= radius;
 	}
 }
 public class Rect(float x = 0, float y = 0, float width = 0, float height = 0) : Shape {
@@ -113,5 +119,9 @@ public class Rect(float x = 0, float y = 0, float width = 0, float height = 0) :
 	}
 	public override string ToString() {
 		return "Rect[X:" + X + " Y:" + Y + " W:" + Width + " H:" + Height + "]";
+	}
+
+	public override bool Contains(Vector2 p) {
+		return p.X >= x && p.X <= x + width && p.Y >= y && p.Y <= y + width;
 	}
 }
