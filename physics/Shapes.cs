@@ -122,6 +122,6 @@ public class Rect(float x = 0, float y = 0, float width = 0, float height = 0) :
 	}
 
 	public override bool Contains(Vector2 p) {
-		return p.X >= x && p.X <= x + width && p.Y >= y && p.Y <= y + width;
+		return p.X >= x && p.X <= x + width && p.Y >= y && p.Y <= y + height;
 	}
 }
